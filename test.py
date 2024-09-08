@@ -1,6 +1,6 @@
 from miniolite import MinioLiteDB
 
-# 初始化数据库
+# initalize the database
 db = MinioLiteDB(path='tmp/test.db')
 try:
     db.create_root_directory()
