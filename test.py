@@ -31,7 +31,7 @@ except Exception as e:
 
 # print(db.list_directory('/'))
 print(db.list_directory('/docs'))
-# print(db.list_directory('/docs/text'))
+print(db.list_directory('/docs/text'))
 
 
 # # 列出目录内容

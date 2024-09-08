@@ -69,10 +69,13 @@ class MinioLiteDB:
         parent_dir =  self.search_path_step(parent_path)
 
         if isinstance(parent_dir, Directory):
-            parent_dir[new_dir_name] = Directory(name=new_dir_name)
-            transaction.commit()
+            if parent_dir.get(new_dir_name) is None:
+                parent_dir[new_dir_name] = Directory(name=new_dir_name)
+                self.commit()
+            else:
+                raise FileExistsError(f"Directory '{new_dir_name}' already exists!")
         else:
-            raise FileNotFoundError(f"No directory found at {parent_path}")
+            raise FileNotFoundError(f"No directory found at '{parent_path}'!")
     
     def create_file(self,path,content):
         path = self.add_root_hearder_to_path(path)
