@@ -1,0 +1,2 @@
+# miniolite
+Object Storage
