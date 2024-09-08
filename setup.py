@@ -28,7 +28,7 @@ setup(
     classifiers=filter(None, classifiers.split('\n')),
     zip_safe=True,
     author='Yaqiang Sun',
-    long_description=open(os.path.join(curr_path, 'README.rst'), 'r').read(),
+    # long_description=open(os.path.join(curr_path, 'README.rst'), 'r').read(),
     long_description_content_type='text/x-rst',
     description='Object Storage based on db',
     license='GPL v3',
