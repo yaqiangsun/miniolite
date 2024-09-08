@@ -38,7 +38,7 @@ class MinioLiteDB:
         parent_dir  = self.root
         for dir_step in parent_dir_list:
             parent_dir = parent_dir.get(dir_step)
-            if not isinstance(parent_dir, Directory):
+            if not (isinstance(parent_dir, Directory) or isinstance(parent_dir, File)):
                 raise FileNotFoundError(f"No directory or file found: {dir_step}")
         return parent_dir
 
@@ -88,16 +88,24 @@ class MinioLiteDB:
             raise FileNotFoundError(f"No directory found at {parent_path}")
 
         
-    def read_file(self,path):
-        file = self.root.get(path)
-        if isinstance(file, File):
-            return file.content
+    def get_file(self,path):
+        path = self.add_root_hearder_to_path(path)
+        file_obj = self.search_path_step(path)
+        if isinstance(file_obj, File):
+            return file_obj.content
         return None
     
 
-    def delete(path):
-        if path in self.root:
-            del self.root[path]
-            transaction.commit()
+    def delete(self,path):
+        path = self.add_root_hearder_to_path(path)
+        parent_path, last_name = os.path.split(path)
+        parent_obj = self.search_path_step(parent_path)
+        if isinstance(parent_obj, Directory):
+            if parent_obj.get(last_name):
+                del parent_obj[last_name]
+                transaction.commit()
+                return True
+            else:
+                raise FileNotFoundError(f"No such file or directory: {path}")
         else:
             raise FileNotFoundError(f"No such file or directory: {path}")

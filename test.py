@@ -10,10 +10,10 @@ try:
     db.create_directory('/docs')
 except Exception as e:
     print(e)
-# try:
-#     db.create_directory('/imgs')
-# except Exception as e:
-#     print(e)
+try:
+    db.create_directory('/imgs')
+except Exception as e:
+    print(e)
 # try:
 #     db.create_directory('/files')
 # except Exception as e:
@@ -29,9 +29,19 @@ except Exception as e:
     print(e)
 
 
-# print(db.list_directory('/'))
+print(db.list_directory('/'))
 print(db.list_directory('/docs'))
 print(db.list_directory('/docs/text'))
+
+try:
+    print(db.get_file('/docs/text/test.txt'))
+except Exception as e:
+    print(e)
+
+
+print(db.delete('/docs'))
+
+print(db.list_directory('/'))
 
 
 # # 列出目录内容
