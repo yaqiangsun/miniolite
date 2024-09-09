@@ -31,6 +31,7 @@ class File(SqlalchemyBase):
     name = Column(String, nullable=False)
     folder_id = Column(Integer, ForeignKey('folders.id'))
     folder = relationship('Folder', backref='files')
+    content = Column(String, nullable=True)
 
     def __repr__(self):
         return f"<File(name={self.name}, folder_id={self.folder_id})>"
@@ -79,8 +80,32 @@ class FileSQLite(SqliteBase):
                 parent_id = folder_now.id
 
     @SqliteBase.with_session
-    def list_directory(self,session,path):
+    def delete_folder(self,session,path):
+        path = self.add_root_hearder_to_path(path)
         dir_list = self.split_path_step(path)
+        assert len(dir_list) >=2, "try to delete root folder, not allowed!"
+        delete_dir_name = dir_list[-1]
+        parent_id = session.query(Folder).filter_by(name=dir_list[-2]).first().id
+        delete_folder = session.query(Folder).filter_by(name=delete_dir_name,parent_id=parent_id).first()
+        session.delete(delete_folder)
+
+    @SqliteBase.with_session
+    def list_folder(self,session,path):
+        dir_list = self.split_path_step(path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError(f"No directory found at {dir_name}")
+            else:
+                parent_id = folder_now.id
+        list_folders = session.query(Folder).filter_by(parent_id=parent_id).all()
+        list_folders_name = [folder.name for folder in list_folders]
+        return list_folders_name
+    @SqliteBase.with_session
+    def add_file(self,session,file_path,content):
+        parent_path, file_name = os.path.split(file_path)
+        dir_list = self.split_path_step(parent_path)
         parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
         for dir_name in dir_list:
             folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
@@ -88,6 +113,83 @@ class FileSQLite(SqliteBase):
                 raise FileNotFoundError((f"No directory found at {dir_name}"))
             else:
                 parent_id = folder_now.id
-        list_folders = session.query(Folder).filter_by(parent_id=parent_id).all()
-        list_folders_name = [folder.name for folder in list_folders]
-        return list_folders_name
+        file = session.query(File).filter_by(name=file_name, folder_id=parent_id).first()
+        if file is not None:
+            raise FileExistsError((f"File {file_name} already exists in {parent_path}"))
+        else:
+            file = File(name=file_name, folder_id=parent_id,content=content)
+            session.add(file)
+            session.commit()
+            return True
+    @SqliteBase.with_session
+    def update_file(self,session,file_path,content):
+        parent_path, file_name = os.path.split(file_path)
+        dir_list = self.split_path_step(parent_path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError((f"No directory found at {dir_name}"))
+            else:
+                parent_id = folder_now.id
+        file = session.query(File).filter_by(name=file_name, folder_id=parent_id).first()
+        if file is not None:
+            file.content = content
+            session.commit()
+            return True
+        else:
+            file = File(name=file_name, folder_id=parent_id,content=content)
+            session.add(file)
+            session.commit()
+            return True
+    @SqliteBase.with_session
+    def read_file(self,session,file_path):
+        parent_path, file_name = os.path.split(file_path)
+        dir_list = self.split_path_step(parent_path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError((f"No directory found at {dir_name}"))
+            else:
+                parent_id = folder_now.id
+        file = session.query(File).filter_by(name=file_name, folder_id=parent_id).first()
+        if file is not None:
+            content = file.content
+            session.commit()
+            return content
+        else:
+            raise FileNotFoundError((f"No file found at {file_name}"))
+        
+    @SqliteBase.with_session
+    def list_files(self,session,folder_path):
+        dir_list = self.split_path_step(folder_path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError((f"No directory found at {dir_name}"))
+            else:
+                parent_id = folder_now.id
+        list_files = session.query(File).filter_by(folder_id=parent_id).all()
+        list_files_name = [file.name for file in list_files]
+        return list_files_name
+    
+    @SqliteBase.with_session
+    def delete_file(self,session,file_path):
+        parent_path, file_name = os.path.split(file_path)
+        dir_list = self.split_path_step(parent_path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError((f"No directory found at {dir_name}"))
+            else:
+                parent_id = folder_now.id
+        file = session.query(File).filter_by(name=file_name, folder_id=parent_id).first()
+        if file is None:
+            raise FileExistsError((f"File {file_name} already exists in {parent_path}"))
+        else:
+            session.delete(file)
+            session.commit()
+            return True
