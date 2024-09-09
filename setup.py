@@ -20,7 +20,7 @@ Operating System :: MacOS :: MacOS X
 curr_path = os.path.abspath(os.path.dirname(__file__))
 setup(
     name='miniolite',
-    version='0.0.1',
+    version='0.0.0.1',
     packages=['miniolite'],
     package_data={'miniolite': ['py.typed']},
     python_requires='>=3.8',
