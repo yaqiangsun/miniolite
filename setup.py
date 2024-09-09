@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup,find_packages
 
 classifiers = """\
 Development Status :: 5 - Production/Stable
@@ -22,6 +22,7 @@ setup(
     name='miniolite',
     version='0.0.0.1',
     packages=['miniolite'],
+    # packages=find_packages(),
     package_data={'miniolite': ['py.typed']},
     python_requires='>=3.8',
     install_requires=['sqlalchemy >= 2.0.30'],
@@ -34,4 +35,5 @@ setup(
     license='GPL v3',
     keywords='lite file system database',
     url='https://github.com/yaqiangsun/miniolite',
+    include_package_data=True,
 )
