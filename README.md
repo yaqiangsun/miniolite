@@ -40,5 +40,5 @@ file_db.delete_file("/data/docs/text/file1.txt")
 ```
 - Step 7, delete a folder:
 ```
-file_db.delete_file("/data/docs/text/file1.txt")
+file_db.delete_folder("/data/docs")
 ```
