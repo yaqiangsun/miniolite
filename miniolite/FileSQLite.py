@@ -46,17 +46,12 @@ class FileSQLite(SqliteBase):
     
     def add_root_hearder_to_path(self,path):
         path= path.strip('/')
-        path = os.path.join(self.root_name,path)
+        path = self.root_name+'/'+path
         return path
     def split_path_step(self,path):
         dir_list  = path.strip('/').split('/')
+        dir_list = list(filter(None, dir_list))
         return dir_list
-
-    @SqliteBase.with_session
-    def add_folder(self,session, path):
-        path = self.add_root_hearder_to_path(path)
-        dir_list = self.split_path_step(path)
-        pass
     
 
     @SqliteBase.with_session
@@ -82,3 +77,17 @@ class FileSQLite(SqliteBase):
                 parent_id = folder.id
             else:
                 parent_id = folder_now.id
+
+    @SqliteBase.with_session
+    def list_directory(self,session,path):
+        dir_list = self.split_path_step(path)
+        parent_id = session.query(Folder).filter_by(name=self.root_name).first().id
+        for dir_name in dir_list:
+            folder_now = session.query(Folder).filter_by(name=dir_name,parent_id=parent_id).first()
+            if folder_now is None:
+                raise FileNotFoundError((f"No directory found at {dir_name}"))
+            else:
+                parent_id = folder_now.id
+        list_folders = session.query(Folder).filter_by(parent_id=parent_id).all()
+        list_folders_name = [folder.name for folder in list_folders]
+        return list_folders_name
