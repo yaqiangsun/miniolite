@@ -8,46 +8,37 @@ miniolite is a database library to replace pure file path saving.
 
 ```
 
-from miniolite import MinioLiteDB
+from miniolite.FileSQLite import FileSQLite
 
 # initalize the database
-db = MinioLiteDB(path='tmp/test.db')
-
-# init the root directory
-db.create_root_directory()
-```
-- Step 2, create a directory:
-
-```
-db.create_directory('/docs')
+file_db = FileSQLite("tmp/test.db")
 ```
 
-- Step 3, create a file:
+
+- Step 2, create a folder:
 
 ```
-db.create_file('/docs/test.txt', 'hello world')
+# create folder
+file_db.force_add_folder("/data/docs/text/")
 ```
 
-- Step 4, read a file:
-
+- Step 3, add a file:
 ```
-db.get_file('/docs/test.txt')
+file_db.add_file("/data/docs/text/file1.txt",content="hello world!!")
 ```
-
-- Step 5, delete a file:
-
+- Step 4, list files:
 ```
-db.delete_file('/docs/test.txt')
+file_db.list_files("/data/docs/text")
 ```
-
-- Step 6, delete a directory:
-
+- Step 5, change a file:
 ```
-db.delete('/docs')
+file_db.update_file("/data/docs/text/file1.txt",content="hello world, again!!")
 ```
-
-- Step 7, list all files and directory in a directory:
-
+- Step 6, delete a file:
 ```
-db.list_directory('/docs')
+file_db.delete_file("/data/docs/text/file1.txt")
+```
+- Step 7, delete a folder:
+```
+file_db.delete_file("/data/docs/text/file1.txt")
 ```

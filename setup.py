@@ -24,7 +24,7 @@ setup(
     packages=['miniolite'],
     package_data={'miniolite': ['py.typed']},
     python_requires='>=3.8',
-    install_requires=['ZODB >= 6.0'],
+    install_requires=['sqlalchemy >= 2.0.30'],
     classifiers=filter(None, classifiers.split('\n')),
     zip_safe=True,
     author='Yaqiang Sun',
