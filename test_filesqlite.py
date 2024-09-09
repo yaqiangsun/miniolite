@@ -18,11 +18,11 @@ def test_filesqlite():
 
     print(file_db.delete_file("/data/docs/text/file1.txt"))
     print(file_db.list_files("/data/docs/text"))
-    
+
     print(file_db.delete_folder("/data/docs"))
     print(file_db.list_folder("/data"))
 
-    print(file_db.delete_folder("/"))
+    # print(file_db.delete_folder("/"))
 
 
     pass
