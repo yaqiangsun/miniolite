@@ -2,6 +2,11 @@
 
 miniolite is a database library to replace pure file path saving.
 
+## Install
+```
+pip install miniolite -i https://pypi.python.org/simple/
+```
+
 ## Usage
 
 - Step 1, initialize:
