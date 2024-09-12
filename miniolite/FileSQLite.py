@@ -188,7 +188,7 @@ class FileSQLite(SqliteBase):
                 parent_id = folder_now.id
         file = session.query(File).filter_by(name=file_name, folder_id=parent_id).first()
         if file is None:
-            raise FileExistsError((f"File {file_name} not exists in {parent_path}"))
+            raise FileNotFoundError((f"File {file_name} not exists in {parent_path}"))
         else:
             session.delete(file)
             session.commit()
