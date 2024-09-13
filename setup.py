@@ -1,6 +1,24 @@
 import os
 from setuptools import setup,find_packages
 
+
+
+from setuptools import Extension
+from setuptools.command.build_ext import build_ext
+class DummyExtension(Extension):
+    def __init__(self):
+        super().__init__("dummy.extension", sources=[])
+class DummyExtensionBuild(build_ext):
+    def run(self) -> None:
+        return
+cmdclass = {
+    "build_ext": DummyExtensionBuild,
+}
+# 定义扩展模块
+ext_modules = [DummyExtension()]
+
+
+
 classifiers = """\
 Development Status :: 5 - Production/Stable
 Intended Audience :: Developers
@@ -20,6 +38,8 @@ Operating System :: MacOS :: MacOS X
 curr_path = os.path.abspath(os.path.dirname(__file__))
 setup(
     name='miniolite',
+    ext_modules=ext_modules,
+    cmdclass=cmdclass,
     version='0.0.0.3',
     packages=['miniolite'],
     # packages=find_packages(),
